@@ -15,7 +15,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             recorded sessions from chrome.storage into this page. */}
         <meta name="redline-app" content="dashboard" />
       </head>
-      <body>{children}</body>
+      <body className="grain bg-ink text-white antialiased selection:bg-rl-red/30">
+        <div className="relative z-[2]">{children}</div>
+      </body>
     </html>
   );
 }

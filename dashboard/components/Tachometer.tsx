@@ -1,76 +1,108 @@
 "use client";
-import { zoneColor, ZONES } from "@/lib/types";
+import { useEffect, useState } from "react";
+import { motion, useMotionValueEvent, useSpring, useTransform } from "framer-motion";
+import { loadColor } from "@/lib/theme";
 
 const SWEEP = 270;
 const A0 = -135;
-const angleFor = (s: number) => A0 + (Math.max(0, Math.min(100, s)) / 100) * SWEEP;
+const CX = 180;
+const CY = 196;
+const R = 132;
 
-function polar(cx: number, cy: number, r: number, deg: number): [number, number] {
+const angleFor = (v: number) => A0 + (Math.max(0, Math.min(100, v)) / 100) * SWEEP;
+function polar(r: number, deg: number): [number, number] {
   const a = ((deg - 90) * Math.PI) / 180;
-  return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  return [CX + r * Math.cos(a), CY + r * Math.sin(a)];
 }
-function arc(cx: number, cy: number, r: number, t0: number, t1: number): string {
-  const [x0, y0] = polar(cx, cy, r, angleFor(t0));
-  const [x1, y1] = polar(cx, cy, r, angleFor(t1));
+function arc(r: number, t0: number, t1: number) {
+  const [x0, y0] = polar(r, angleFor(t0));
+  const [x1, y1] = polar(r, angleFor(t1));
   const large = angleFor(t1) - angleFor(t0) > 180 ? 1 : 0;
   return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r} ${r} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
 }
 
-export default function Tachometer({ score, size = 300 }: { score: number; size?: number }) {
-  const cx = 100, cy = 104, r = 78;
-  const color = zoneColor(score);
-  const redlining = score >= ZONES.REDLINE;
+export default function Tachometer({ value }: { value: number }) {
+  // start at 0 so the needle sweeps up to the value on first paint
+  const sv = useSpring(0, { stiffness: 70, damping: 16, mass: 0.7 });
+  useEffect(() => {
+    sv.set(value);
+  }, [value, sv]);
+
+  const [shown, setShown] = useState(0);
+  useMotionValueEvent(sv, "change", (v) => setShown(Math.round(v)));
+
+  const progress = useTransform(sv, (v) => Math.max(0, Math.min(100, v)) / 100);
+  const tipX = useTransform(sv, (v) => polar(R - 16, angleFor(v))[0]);
+  const tipY = useTransform(sv, (v) => polar(R - 16, angleFor(v))[1]);
+
+  const color = loadColor(shown);
   const ticks = [];
-  for (let s = 0; s <= 100; s += 10) {
-    const [ix, iy] = polar(cx, cy, r - 12, angleFor(s));
-    const [ox, oy] = polar(cx, cy, r - 4, angleFor(s));
+  for (let i = 0; i <= 100; i += 5) {
+    const [ix, iy] = polar(R - 20, angleFor(i));
+    const [ox, oy] = polar(R - 12, angleFor(i));
     ticks.push(
-      <line key={s} x1={ix} y1={iy} x2={ox} y2={oy} stroke="#64748b" strokeWidth={s % 20 === 0 ? 2 : 1} />
+      <line key={i} x1={ix} y1={iy} x2={ox} y2={oy} stroke="rgba(255,255,255,0.14)" strokeWidth={i % 25 === 0 ? 2 : 1} />
     );
   }
+
   return (
-    <svg viewBox="0 0 200 200" width={size} height={size} style={{ overflow: "visible" }}>
-      <defs>
-        <filter id="tg" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="3" result="b" />
-          <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
-        </filter>
-        <linearGradient id="zg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#16a34a" /><stop offset="1" stopColor="#4ade80" />
-        </linearGradient>
-        <linearGradient id="za" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#d97706" /><stop offset="1" stopColor="#fbbf24" />
-        </linearGradient>
-        <linearGradient id="zr" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#dc2626" /><stop offset="1" stopColor="#f87171" />
-        </linearGradient>
-      </defs>
-
-      <path d={arc(cx, cy, r, 0, 100)} fill="none" stroke="#1f2530" strokeWidth={14} strokeLinecap="round" />
-      <path d={arc(cx, cy, r, 0, 45)} fill="none" stroke="url(#zg)" strokeWidth={14} opacity={0.9} />
-      <path d={arc(cx, cy, r, 45, 78)} fill="none" stroke="url(#za)" strokeWidth={14} opacity={0.9} />
-      <path d={arc(cx, cy, r, 78, 100)} fill="none" stroke="url(#zr)" strokeWidth={14} opacity={redlining ? 1 : 0.9} />
-      {ticks}
-
-      <polygon
-        points="100,104 97,104 100,30 103,104"
-        fill={color}
-        filter="url(#tg)"
-        style={{
-          transformBox: "view-box",
-          transformOrigin: "100px 104px",
-          transform: `rotate(${angleFor(score)}deg)`,
-          transition: "transform 600ms cubic-bezier(.22,1,.36,1)",
-        }}
+    <div className="relative mx-auto w-full max-w-[460px]">
+      {/* ambient zone glow */}
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 rounded-full blur-3xl"
+        animate={{ backgroundColor: color, opacity: 0.1 + (shown / 100) * 0.32 }}
+        transition={{ duration: 0.6 }}
       />
-      <circle cx={cx} cy={cy} r={7} fill="#0b0e14" stroke="#94a3b8" strokeWidth={2} />
+      <svg viewBox="0 0 360 360" className="relative w-full" style={{ overflow: "visible" }}>
+        <defs>
+          <linearGradient id="rl-arc" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="#30d158" />
+            <stop offset="0.42" stopColor="#ffd60a" />
+            <stop offset="0.64" stopColor="#ff9f0a" />
+            <stop offset="0.82" stopColor="#ff3b30" />
+            <stop offset="1" stopColor="#ff3b30" />
+          </linearGradient>
+          <filter id="rl-soft" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="4" result="b" />
+            <feMerge>
+              <feMergeNode in="b" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
 
-      <text x={100} y={150} textAnchor="middle" fontFamily="ui-monospace, Menlo, monospace"
-        fontSize={32} fontWeight={800} fill={color}>{Math.round(score)}</text>
-      <text x={100} y={169} textAnchor="middle" fontFamily="ui-sans-serif, system-ui, sans-serif"
-        fontSize={12} letterSpacing={2} fill="#64748b">ENGINE LOAD</text>
-      <text x={100} y={184} textAnchor="middle" fontFamily="ui-monospace, Menlo, monospace"
-        fontSize={12} letterSpacing={1} fill="#94a3b8">( 0 – 100 )</text>
-    </svg>
+        {/* base track */}
+        <path d={arc(R, 0, 100)} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={16} strokeLinecap="round" />
+        {ticks}
+
+        {/* progress arc */}
+        <motion.path
+          d={arc(R, 0, 100)}
+          fill="none"
+          stroke="url(#rl-arc)"
+          strokeWidth={16}
+          strokeLinecap="round"
+          filter="url(#rl-soft)"
+          style={{ pathLength: progress }}
+        />
+
+        {/* needle + glowing tip */}
+        <motion.line x1={CX} y1={CY} x2={tipX} y2={tipY} stroke={color} strokeWidth={3} strokeLinecap="round" filter="url(#rl-soft)" />
+        <motion.circle cx={tipX} cy={tipY} r={6} fill={color} filter="url(#rl-soft)" />
+        <circle cx={CX} cy={CY} r={10} fill="#0c0c0c" stroke="rgba(255,255,255,0.18)" strokeWidth={2} />
+
+        {/* numeric */}
+        <text x={CX} y={CY - 6} textAnchor="middle" fontSize={84} fontWeight={700} fill="#fff" className="num" style={{ letterSpacing: "-0.04em" }}>
+          {shown}
+        </text>
+        <text x={CX} y={CY + 26} textAnchor="middle" fontSize={11} fill="rgba(255,255,255,0.4)" letterSpacing="3" fontWeight={600}>
+          ENGINE LOAD
+        </text>
+        <text x={CX} y={CY + 44} textAnchor="middle" fontSize={11} fill="rgba(255,255,255,0.28)" letterSpacing="1" fontFamily="ui-monospace, monospace">
+          ( 0 – 100 )
+        </text>
+      </svg>
+    </div>
   );
 }
