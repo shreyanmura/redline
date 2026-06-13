@@ -15,25 +15,49 @@
   // ----- Dashboard bridge -------------------------------------------------
   const isDashboard = !!document.querySelector('meta[name="redline-app"]');
   if (isDashboard) {
+    let alive = true; // becomes false if this content script is orphaned (extension reloaded)
+
     function sendToPage() {
-      chrome.storage.local.get(["sessions", "baseline"], (d) => {
-        window.postMessage(
-          { __redline: true, type: "sessions", sessions: d.sessions || [], baseline: d.baseline || null },
-          "*"
-        );
-      });
+      if (!alive) return;
+      try {
+        chrome.storage.local.get(["sessions", "baseline"], (d) => {
+          if (chrome.runtime.lastError) {
+            alive = false;
+            return;
+          }
+          window.postMessage(
+            { __redline: true, type: "sessions", sessions: d.sessions || [], baseline: d.baseline || null },
+            "*"
+          );
+        });
+      } catch (e) {
+        alive = false; // "Extension context invalidated" → stop heartbeating
+      }
     }
+
     window.addEventListener("message", (e) => {
       if (e.source !== window) return;
       const d = e.data;
       if (d && d.__redline && d.type === "ready") sendToPage();
     });
-    chrome.storage.onChanged.addListener((ch, area) => {
-      if (area === "local" && (ch.sessions || ch.baseline)) sendToPage();
+    try {
+      chrome.storage.onChanged.addListener((ch, area) => {
+        if (area === "local" && (ch.sessions || ch.baseline)) sendToPage();
+      });
+    } catch (e) {}
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) sendToPage();
     });
+
     sendToPage();
-    setTimeout(sendToPage, 600);
-    setTimeout(sendToPage, 1600);
+    // heartbeat: keep the page in sync with chrome.storage while this script lives
+    const hb = setInterval(() => {
+      if (!alive) {
+        clearInterval(hb);
+        return;
+      }
+      sendToPage();
+    }, 2000);
     return; // no monitoring UI on the dashboard
   }
 

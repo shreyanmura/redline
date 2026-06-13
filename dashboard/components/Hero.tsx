@@ -3,8 +3,23 @@ import { motion } from "framer-motion";
 import Tachometer from "./Tachometer";
 import { EASE, loadState } from "@/lib/theme";
 
-export default function Hero({ value, connected }: { value: number; connected: boolean }) {
+export default function Hero({
+  value,
+  connected,
+  stale,
+}: {
+  value: number;
+  connected: boolean;
+  stale?: boolean;
+}) {
   const state = loadState(value);
+  const live = connected && !stale;
+  const chipText = !connected
+    ? "Sample data — connect the extension to go live"
+    : stale
+    ? "Reconnecting — refresh this tab to resync"
+    : "Connected to your typing · live";
+  const dotColor = live ? "bg-rl-green" : stale ? "bg-rl-yellow" : "bg-white/30";
   return (
     <section className="relative flex min-h-[92vh] items-center overflow-hidden pt-28">
       <div className="pointer-events-none absolute inset-0 bg-grid-fade" />
@@ -18,12 +33,10 @@ export default function Hero({ value, connected }: { value: number; connected: b
             className="flex items-center gap-2 text-[15px] text-white/45"
           >
             <span className="relative flex h-2 w-2">
-              <span
-                className={`absolute inline-flex h-full w-full rounded-full ${connected ? "animate-ping bg-rl-green/60" : "bg-white/20"}`}
-              />
-              <span className={`relative inline-flex h-2 w-2 rounded-full ${connected ? "bg-rl-green" : "bg-white/30"}`} />
+              {live && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rl-green/60" />}
+              <span className={`relative inline-flex h-2 w-2 rounded-full ${dotColor}`} />
             </span>
-            {connected ? "Connected to your typing" : "Sample data — connect the extension to go live"}
+            {chipText}
           </motion.div>
 
           <motion.h1
