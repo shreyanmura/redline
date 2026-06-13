@@ -20,7 +20,7 @@ export default function Page() {
   const [view, setView] = useState<View>(DEMO_VIEW);
   const [connected, setConnected] = useState(false);
   const [stale, setStale] = useState(false);
-  const [score, setScore] = useState(DEMO_VIEW.summary.currentLoad);
+  const [score, setScore] = useState(DEMO_VIEW.summary.peakLoad);
   const sigRef = useRef("");
   const lastMsgRef = useRef(0);
 
@@ -68,7 +68,9 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    setScore(view.summary.currentLoad);
+    // hero gauge shows the session's PEAK load (highest reached), not the
+    // ending value — which is what the dashboard is reviewing.
+    setScore(view.summary.peakLoad);
   }, [view]);
 
   return (
