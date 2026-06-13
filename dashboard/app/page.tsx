@@ -51,11 +51,12 @@ export default function Page() {
         {/* first graphic after the hero */}
         <WhyTyping />
         <div className="hairline" />
-        {/* the index, immediately followed by its breakdown */}
-        <HowCalculated />
+        {/* breakdown + session metrics, sitting above the index */}
         <WhatDroveLoad signals={view.signals} />
-        <div className="hairline" />
         <SessionMetrics summary={view.summary} />
+        <div className="hairline" />
+        <HowCalculated />
+        <div className="hairline" />
         <Replay data={view.tonight} />
         <div className="hairline" />
         <PredictiveChart data={view.week} />
