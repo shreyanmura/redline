@@ -10,6 +10,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        {/* Marker the Redline extension's content script looks for, to bridge
+            recorded sessions from chrome.storage into this page. */}
+        <meta name="redline-app" content="dashboard" />
+      </head>
       <body>{children}</body>
     </html>
   );

@@ -1,9 +1,11 @@
 :root {
   --bg: #0a0d13;
+  --bg2: #070a0f;
   --card: #11151d;
   --line: #1f2733;
   --text: #e5e7eb;
   --muted: #64748b;
+  --muted2: #94a3b8;
   --green: #22c55e;
   --red: #ef4444;
 }
@@ -29,6 +31,8 @@ body {
   background: var(--card); border: 1px solid var(--line);
   border-radius: 14px; padding: 14px 16px; margin-bottom: 12px;
 }
+.toggle-row.sub { padding: 11px 16px; background: var(--bg2); }
+.toggle-row.sub .toggle-label { font-size: 12.5px; color: var(--muted2); }
 .toggle-label { font-size: 13px; font-weight: 600; }
 .toggle-state { font-size: 11px; color: var(--muted); margin-top: 2px; }
 

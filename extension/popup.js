@@ -1,15 +1,20 @@
-/* popup.js — toggle + stats. Writes `enabled` to storage; content scripts react. */
+/* popup.js — toggles + stats. Writes to storage; content scripts react. */
 const $ = (id) => document.getElementById(id);
 const DEFAULT_DASHBOARD = "https://dashboard-shreyanmura-2156s-projects.vercel.app";
 
 async function render() {
-  const { enabled, peakToday = 0, sessions = [], baseline, dashboardUrl } =
-    await chrome.storage.local.get(["enabled", "peakToday", "sessions", "baseline", "dashboardUrl"]);
+  const { enabled, gaugeHidden, peakToday = 0, sessions = [], baseline, dashboardUrl } =
+    await chrome.storage.local.get([
+      "enabled", "gaugeHidden", "peakToday", "sessions", "baseline", "dashboardUrl",
+    ]);
   $("toggle").checked = !!enabled;
   $("state").textContent = enabled ? "On — watching your rhythm" : "Off";
+  $("gaugeToggle").checked = !gaugeHidden;
+  $("gaugeState").textContent = gaugeHidden ? "Hidden" : "Visible";
   $("peak").textContent = peakToday || 0;
   $("sessions").textContent = (sessions || []).filter(isToday).length;
-  $("cal").textContent = baseline ? "Set" : "—";
+  $("cal").textContent = baseline && baseline.wpm ? `${baseline.wpm}` : baseline ? "Set" : "—";
+  $("calLbl").textContent = baseline && baseline.wpm ? "CALM WPM" : "BASELINE";
   $("dash").dataset.url = dashboardUrl || DEFAULT_DASHBOARD;
 }
 
@@ -21,6 +26,12 @@ function isToday(s) {
 
 $("toggle").addEventListener("change", async (e) => {
   await chrome.storage.local.set({ enabled: e.target.checked });
+  render();
+});
+
+$("gaugeToggle").addEventListener("change", async (e) => {
+  // checked = visible, so gaugeHidden is the inverse
+  await chrome.storage.local.set({ gaugeHidden: !e.target.checked });
   render();
 });
 

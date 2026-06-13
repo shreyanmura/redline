@@ -1,18 +1,54 @@
 /*
- * content.js — runs on every page. Captures keystroke TIMING (never content),
- * drives the floating gauge, fires real-time nudges, and on toggle-off builds a
- * session summary and asks the background worker for an AI debrief.
+ * content.js — runs on every page.
+ *
+ * On the Redline dashboard (detected via a <meta name="redline-app">): acts as a
+ * BRIDGE, forwarding the user's recorded sessions + baseline from chrome.storage
+ * into the page so the website shows real data. No gauge there.
+ *
+ * On every other page: captures keystroke TIMING (never content), drives the
+ * floating gauge, fires nudges, samples a load timeline, and on toggle-off builds
+ * a session summary + asks the background worker for an AI debrief.
  */
 (function () {
   const { createTracker, ZONES } = window.RedlineFeatures;
 
+  // ----- Dashboard bridge -------------------------------------------------
+  const isDashboard = !!document.querySelector('meta[name="redline-app"]');
+  if (isDashboard) {
+    function sendToPage() {
+      chrome.storage.local.get(["sessions", "baseline"], (d) => {
+        window.postMessage(
+          { __redline: true, type: "sessions", sessions: d.sessions || [], baseline: d.baseline || null },
+          "*"
+        );
+      });
+    }
+    window.addEventListener("message", (e) => {
+      if (e.source !== window) return;
+      const d = e.data;
+      if (d && d.__redline && d.type === "ready") sendToPage();
+    });
+    chrome.storage.onChanged.addListener((ch, area) => {
+      if (area === "local" && (ch.sessions || ch.baseline)) sendToPage();
+    });
+    sendToPage();
+    setTimeout(sendToPage, 600);
+    setTimeout(sendToPage, 1600);
+    return; // no monitoring UI on the dashboard
+  }
+
+  // ----- Live monitoring --------------------------------------------------
   let enabled = false;
+  let gaugeHidden = false;
   let tracker = null;
   let baseline = null;
   let intervalId = null;
   let redlineSince = null;
   let lastNudgeAt = 0;
   let nudgeIdx = 0;
+  let series = [];
+  let tickCount = 0;
+  const SAMPLE_EVERY = 10; // sample the load every ~1.5s for the dashboard replay
 
   const REALTIME_TIPS = [
     "You've been redlining — unclench your jaw, drop your shoulders, take one slow breath.",
@@ -34,7 +70,6 @@
     return !!t.isContentEditable;
   }
 
-  // Decide whether a keydown is a "typing" event and whether it's a correction.
   function classify(e) {
     const k = e.key;
     if (k === "Backspace" || k === "Delete") return { count: true, bs: true };
@@ -56,7 +91,12 @@
     const score = tracker.tick(now());
     window.RedlineWidget.update(score);
 
-    // Sustained-redline -> real-time nudge (local, instant, no network).
+    tickCount++;
+    if (tickCount % SAMPLE_EVERY === 0) {
+      series.push(score);
+      if (series.length > 200) series.shift();
+    }
+
     if (score >= ZONES.REDLINE) {
       if (redlineSince === null) redlineSince = now();
       const sustained = now() - redlineSince > 4000;
@@ -75,7 +115,10 @@
     tracker = createTracker(baseline);
     redlineSince = null;
     lastNudgeAt = 0;
+    series = [];
+    tickCount = 0;
     window.RedlineWidget.mount();
+    window.RedlineWidget.setHidden(gaugeHidden);
     window.RedlineWidget.setActive(true);
     window.RedlineWidget.hideNudge();
     if (intervalId) clearInterval(intervalId);
@@ -89,16 +132,13 @@
     if (!tracker) return;
 
     const summary = tracker.getSummary(now());
+    summary.series = series.slice();
     tracker = null;
 
-    // Only debrief if there was a real session.
-    if (summary.keystrokes < 12) return;
+    if (summary.keystrokes < 12) return; // ignore trivial sessions
 
-    // Persist the session for the dashboard.
     chrome.runtime.sendMessage({ type: "saveSession", summary });
 
-    // Show the debrief card immediately in a loading state, then fill it from
-    // the AI coach (falls back to a local debrief if the coach is unreachable).
     window.RedlineWidget.showDebrief({ title: "Session debrief", summary, loading: true });
     chrome.runtime.sendMessage({ type: "coachDebrief", summary }, (resp) => {
       const text = (resp && resp.text) || localDebrief(summary);
@@ -106,7 +146,6 @@
     });
   }
 
-  // Offline fallback so the debrief never shows an error on stage.
   function localDebrief(s) {
     const hot = s.peakLoad >= ZONES.REDLINE;
     const lead = hot
@@ -120,19 +159,20 @@
     );
   }
 
-  // React to popup toggle / calibration writes.
   function applyState(state) {
     const wasEnabled = enabled;
     enabled = !!state.enabled;
     baseline = state.baseline || null;
+    gaugeHidden = !!state.gaugeHidden;
     if (enabled && !wasEnabled) startSession();
     else if (!enabled && wasEnabled) endSession();
+    window.RedlineWidget.setHidden(gaugeHidden); // applies live; harmless if unmounted
   }
 
-  chrome.storage.local.get(["enabled", "baseline"], applyState);
+  chrome.storage.local.get(["enabled", "baseline", "gaugeHidden"], applyState);
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== "local") return;
-    chrome.storage.local.get(["enabled", "baseline"], applyState);
+    chrome.storage.local.get(["enabled", "baseline", "gaugeHidden"], applyState);
   });
 
   document.addEventListener("keydown", onKeyDown, true);

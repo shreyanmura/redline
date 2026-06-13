@@ -7,9 +7,11 @@
   let host = null;
   let shadow = null;
   let gauge = null;
+  let wrapEl = null;
   let nudgeEl = null;
   let debriefEl = null;
   let nudgeTimer = null;
+  let hidden = false;
 
   const STYLE = `
     :host { all: initial; }
@@ -74,7 +76,9 @@
     shadow.appendChild(style);
 
     const wrap = document.createElement("div");
+    wrapEl = wrap;
     wrap.className = "wrap";
+    wrap.style.display = hidden ? "none" : "";
     wrap.innerHTML = `
       <div class="card">
         <div class="top" id="rl-drag">
@@ -115,6 +119,12 @@
 
   function update(score) {
     if (gauge) gauge.setScore(score);
+  }
+
+  // Hide/show only the gauge card; the end-of-session debrief can still appear.
+  function setHidden(h) {
+    hidden = !!h;
+    if (wrapEl) wrapEl.style.display = hidden ? "none" : "";
   }
 
   function setActive(on) {
@@ -167,11 +177,11 @@
 
   function unmount() {
     if (host) host.remove();
-    host = shadow = gauge = nudgeEl = debriefEl = null;
+    host = shadow = gauge = wrapEl = nudgeEl = debriefEl = null;
   }
 
   window.RedlineWidget = {
-    mount, unmount, update, setActive,
+    mount, unmount, update, setActive, setHidden,
     showNudge, hideNudge, showDebrief, updateDebriefBody,
   };
 })();

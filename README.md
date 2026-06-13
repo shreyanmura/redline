@@ -25,12 +25,18 @@ dashboard/    Next.js app — weekly trend, tonight's replay, and the AI coach
 ### The two pieces
 
 1. **Extension** — flip the toggle on before you write (e.g. an email). A floating
-   tachometer overlays the page and the needle moves in real time. Sustained redline
-   triggers a gentle on‑page nudge. Flip the toggle **off** and you get an
-   **end‑of‑session debrief**: how it went + low‑effort ways to wind down your day.
-2. **Dashboard** — the "make the invisible visible" story: a 7‑day **predictive‑
-   maintenance** trend, a **replay** of tonight's spiral, the signal breakdown, and
-   the **Redline Coach** (powered by Backboard, with memory across sessions).
+   tachometer overlays the page and the needle moves in real time — it tracks your
+   *instantaneous* pace (speeding up revs it; slowing down drops it) with corrections,
+   erratic rhythm, and brief hesitant pauses pushing you into the redline. A second
+   toggle **hides/shows** the on‑page gauge. Sustained redline triggers a gentle nudge.
+   Flip monitoring **off** and you get an **end‑of‑session debrief**: how it went +
+   low‑effort ways to wind down your day. A 3‑round **calibration** learns your calm
+   baseline and reports your calm WPM.
+2. **Dashboard** — shows **your real recorded sessions** (bridged live from the
+   extension): a 7‑day **predictive‑maintenance** trend, a **replay** of your last
+   session's spiral, the signal breakdown, and the **Redline Coach** (powered by
+   Backboard, with memory across sessions). With no extension installed it shows sample
+   data so the page still demos standalone.
 
 ---
 

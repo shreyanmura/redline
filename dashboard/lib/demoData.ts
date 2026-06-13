@@ -4,7 +4,7 @@ import { SessionSummary } from "./types";
 // session has been recorded. Live sessions from the extension are merged on top.
 
 export type DayPoint = { label: string; peak: number; avg: number };
-export type TimePoint = { min: number; load: number };
+export type TimePoint = { sec: number; load: number };
 
 // Last 7 days — a quietly worsening week that culminates in today's redline.
 // (Classic "the system was running hot for days before the crisis" arc.)
@@ -20,23 +20,22 @@ export const WEEK: DayPoint[] = [
 
 // Tonight's session — the needle climbing into the redline while writing.
 // A steady-ish start, then a stress spiral around the 22-32 minute mark.
-export const TONIGHT: TimePoint[] = [
-  { min: 0, load: 18 }, { min: 2, load: 22 }, { min: 4, load: 20 },
-  { min: 6, load: 27 }, { min: 8, load: 31 }, { min: 10, load: 29 },
-  { min: 12, load: 36 }, { min: 14, load: 44 }, { min: 16, load: 41 },
-  { min: 18, load: 49 }, { min: 20, load: 58 }, { min: 22, load: 67 },
-  { min: 24, load: 79 }, { min: 26, load: 86 }, { min: 28, load: 91 },
-  { min: 30, load: 88 }, { min: 32, load: 82 }, { min: 34, load: 71 },
-  { min: 36, load: 64 }, { min: 38, load: 57 }, { min: 40, load: 49 },
+const TONIGHT_LOADS = [
+  18, 22, 20, 27, 31, 29, 36, 44, 41, 49, 58, 67, 79, 86, 91, 88, 82, 71, 64, 57, 49,
 ];
+export const TONIGHT: TimePoint[] = TONIGHT_LOADS.map((load, i) => ({ sec: i * 120, load }));
 
 export const DEMO_SUMMARY: SessionSummary = {
   peakLoad: 91,
   currentLoad: 49,
+  avgLoad: 52,
   durationSec: 40 * 60,
   keystrokes: 1840,
+  avgWpm: 71,
   redlineSeconds: 6 * 60,
   dominantSignal: "frequent corrections / backspacing",
+  contributions: { speed: 46, errors: 22, rhythm: 16, hesitation: 9 },
+  series: TONIGHT_LOADS,
   hadBaseline: true,
 };
 

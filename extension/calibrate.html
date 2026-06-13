@@ -4,50 +4,95 @@
     <meta charset="UTF-8" />
     <title>Redline · Calibrate</title>
     <style>
-      :root { --bg:#0a0d13; --card:#11151d; --line:#1f2733; --text:#e5e7eb; --muted:#64748b; --green:#22c55e; }
+      :root { --bg:#0a0d13; --card:#11151d; --line:#1f2733; --text:#e5e7eb; --muted:#64748b; --green:#22c55e; --blue:#3b82f6; }
       * { box-sizing:border-box; margin:0; padding:0; }
       body {
         background: radial-gradient(120% 90% at 50% 0%, #131826, var(--bg) 60%);
         color: var(--text); font-family: ui-sans-serif, system-ui, sans-serif;
         min-height: 100vh; display:flex; align-items:center; justify-content:center; padding:24px;
       }
-      .card { width: 620px; max-width: 100%; background: var(--card);
+      .card { width: 640px; max-width: 100%; background: var(--card);
         border:1px solid var(--line); border-radius:20px; padding:32px; }
-      .badge { display:inline-block; font-size:11px; letter-spacing:2px; color:var(--green);
-        border:1px solid rgba(34,197,94,.3); border-radius:999px; padding:4px 12px; margin-bottom:16px; }
-      h1 { font-size:24px; margin-bottom:8px; }
-      p.lead { color:#94a3b8; font-size:14px; line-height:1.6; margin-bottom:20px; }
+      .top { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+      .badge { font-size:11px; letter-spacing:2px; color:var(--green);
+        border:1px solid rgba(34,197,94,.3); border-radius:999px; padding:4px 12px; }
+      .step { font-size:12px; color:var(--muted); letter-spacing:1px; font-weight:600; }
+      .dots { display:flex; gap:6px; margin-left:10px; }
+      .dot { width:8px; height:8px; border-radius:50%; background:#2a3340; }
+      .dot.active { background:var(--green); box-shadow:0 0 8px var(--green); }
+      .dot.done { background:var(--green); opacity:.5; }
+      h1 { font-size:23px; margin-bottom:8px; }
+      p.lead { color:#94a3b8; font-size:14px; line-height:1.6; margin-bottom:18px; }
       .sample { background:#0b0e14; border:1px solid var(--line); border-radius:12px;
-        padding:14px 16px; color:#7c8aa0; font-size:14px; line-height:1.7; margin-bottom:14px; }
-      textarea { width:100%; height:140px; background:#0b0e14; color:var(--text);
+        padding:14px 16px; color:#9fb0c6; font-size:15px; line-height:1.7; margin-bottom:14px; }
+      textarea { width:100%; height:120px; background:#0b0e14; color:var(--text);
         border:1px solid var(--line); border-radius:12px; padding:14px; font-size:15px;
         line-height:1.6; resize:none; outline:none; font-family:inherit; }
       textarea:focus { border-color:#334155; }
       .bar { height:8px; background:#0b0e14; border-radius:999px; margin:18px 0 10px; overflow:hidden; }
-      .fill { height:100%; width:0%; background:linear-gradient(90deg,#166534,#22c55e); transition:width .2s; }
+      .fill { height:100%; width:0%; background:linear-gradient(90deg,#166534,#22c55e); transition:width .15s; }
       .status { font-size:13px; color:var(--muted); }
-      .done { color:var(--green); font-weight:600; }
       .foot { margin-top:18px; font-size:11px; color:var(--muted); border-top:1px solid var(--line); padding-top:14px; }
+
+      /* result screen */
+      .result { display:none; text-align:center; padding:10px 0; }
+      .result.show { display:block; }
+      .result .big { font-size:64px; font-weight:800; font-family:ui-monospace,Menlo,monospace;
+        background:linear-gradient(90deg,#22c55e,#4ade80); -webkit-background-clip:text;
+        -webkit-text-fill-color:transparent; line-height:1; }
+      .result .unit { font-size:14px; color:var(--muted); letter-spacing:2px; margin-top:6px; }
+      .result h2 { font-size:20px; margin:18px 0 6px; }
+      .result p { color:#94a3b8; font-size:14px; line-height:1.6; }
+      .result .mini { display:flex; justify-content:center; gap:24px; margin:20px 0 4px; }
+      .result .mini div { text-align:center; }
+      .result .mini .n { font-size:20px; font-weight:700; font-family:ui-monospace,Menlo,monospace; }
+      .result .mini .l { font-size:10px; color:var(--muted); letter-spacing:1px; margin-top:4px; }
+      .btn { margin-top:20px; border:none; cursor:pointer; background:linear-gradient(90deg,#1d4ed8,#3b82f6);
+        color:#fff; border-radius:11px; padding:12px 22px; font-size:13px; font-weight:600; }
     </style>
   </head>
   <body>
     <div class="card">
-      <div class="badge">BASELINE CALIBRATION</div>
-      <h1>Type calmly for a few seconds</h1>
-      <p class="lead">
-        Redline measures how far your typing drifts from <em>your own</em> normal.
-        Relax your shoulders and copy the lines below at a comfortable pace — this
-        teaches the gauge what "calm you" feels like.
-      </p>
-      <div class="sample">
-        The quietest mornings make the clearest afternoons. I am not in a hurry, and
-        there is enough time for the things that matter. One steady breath, one steady
-        line, and the day takes care of itself.
+      <!-- TEST SCREEN -->
+      <div id="testScreen">
+        <div class="top">
+          <span class="badge">BASELINE CALIBRATION</span>
+          <div style="display:flex;align-items:center">
+            <span class="step" id="step">TEST 1 / 3</span>
+            <span class="dots">
+              <span class="dot active" id="d0"></span>
+              <span class="dot" id="d1"></span>
+              <span class="dot" id="d2"></span>
+            </span>
+          </div>
+        </div>
+        <h1>Type this calmly</h1>
+        <p class="lead">
+          Relax your shoulders and copy the line below at a comfortable pace. We measure how
+          far your typing later drifts from <em>this</em> calm baseline — across three short rounds.
+        </p>
+        <div class="sample" id="sample"></div>
+        <textarea id="ta" placeholder="Start typing here…" autofocus></textarea>
+        <div class="bar"><div class="fill" id="fill"></div></div>
+        <div class="status" id="status">0 / 55 keystrokes</div>
+        <div class="foot">&#128274; Only keystroke timing is used — your text is never stored or sent.</div>
       </div>
-      <textarea id="ta" placeholder="Start typing here…" autofocus></textarea>
-      <div class="bar"><div class="fill" id="fill"></div></div>
-      <div class="status" id="status">0 / 60 keystrokes</div>
-      <div class="foot">&#128274; Only keystroke timing is used — your text is never stored or sent.</div>
+
+      <!-- RESULT SCREEN -->
+      <div class="result" id="result">
+        <div class="badge" style="display:inline-block;margin-bottom:18px">&#10003; BASELINE SET</div>
+        <div class="big" id="wpm">0</div>
+        <div class="unit">WORDS PER MINUTE · CALM</div>
+        <h2>You're calibrated.</h2>
+        <p>Redline now knows your relaxed typing rhythm. When a writing session drifts above this,
+           the needle climbs toward the redline.</p>
+        <div class="mini">
+          <div><div class="n" id="mRounds">3</div><div class="l">ROUNDS</div></div>
+          <div><div class="n" id="mKeys">0</div><div class="l">KEYSTROKES</div></div>
+          <div><div class="n" id="mWpm">0</div><div class="l">CALM WPM</div></div>
+        </div>
+        <button class="btn" id="closeBtn">Done — close tab</button>
+      </div>
     </div>
 
     <script src="features.js"></script>
