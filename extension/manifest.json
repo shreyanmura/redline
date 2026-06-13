@@ -3,8 +3,8 @@
   "name": "Redline — a tachometer for your mental load",
   "version": "0.1.0",
   "description": "A check-engine light for burnout. Reads your typing rhythm (timing only, never your words) and shows mental load as a live tachometer.",
-  "permissions": ["storage", "tabs"],
-  "host_permissions": ["http://localhost/*", "http://127.0.0.1/*", "https://*/*"],
+  "permissions": ["storage", "tabs", "scripting"],
+  "host_permissions": ["http://*/*", "https://*/*"],
   "action": {
     "default_popup": "popup.html",
     "default_title": "Redline",

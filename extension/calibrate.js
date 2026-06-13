@@ -1,10 +1,16 @@
 /*
  * calibrate.js — 3-round calm-typing calibration.
- * Each round collects ~55 keystrokes, shows progress (Test X / 3), then advances.
- * After round 3 we compute the personal baseline + average calm WPM and save it.
+ *
+ * Each round needs TARGET character keystrokes. When a round completes we LOCK
+ * input (transitioning) so stray keystrokes during the hand-off can't skip rounds
+ * or corrupt timing. After 3 rounds we compute the personal baseline and the
+ * average calm WPM and save it.
+ *
+ * WPM is gross WPM = (characters / 5) / minutes, measured from the first to the
+ * last character keystroke of the round — so slow typing yields a low WPM.
  */
 (function () {
-  const TARGET = 55; // character-producing keystrokes per round
+  const TARGET = 55; // character keystrokes per round
   const PASSAGES = [
     "The quietest mornings make the clearest afternoons, and there is enough time for the things that matter most.",
     "Slow water still gets there. One steady line at a time, the page fills and the day takes care of itself.",
@@ -18,12 +24,24 @@
   const stepEl = document.getElementById("step");
 
   let round = 0;
-  let allEvents = []; // {t, bs} across all rounds (for cv/kpm/bsRate)
-  let roundChars = 0;
-  let roundStart = null;
-  let roundWpms = [];
-  let totalKeys = 0;
   let finished = false;
+  let transitioning = false;
+
+  let charTimes = []; // timestamps of char keystrokes in the CURRENT round
+  let lastT = null; // previous keystroke time in current round (for intervals)
+  const intervals = []; // intra-round inter-key intervals (no cross-round gaps)
+  let totalChars = 0;
+  let totalBs = 0;
+  const roundWpms = [];
+
+  const median = (a) => {
+    if (!a.length) return 0;
+    const s = [...a].sort((x, y) => x - y);
+    const m = Math.floor(s.length / 2);
+    return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+  };
+  const mean = (a) => (a.length ? a.reduce((s, x) => s + x, 0) / a.length : 0);
+  const std = (a, m) => (a.length ? Math.sqrt(mean(a.map((x) => (x - m) * (x - m)))) : 0);
 
   function loadRound() {
     sampleEl.textContent = PASSAGES[round];
@@ -33,15 +51,16 @@
       d.className = "dot" + (i < round ? " done" : i === round ? " active" : "");
     }
     ta.value = "";
-    roundChars = 0;
-    roundStart = null;
+    charTimes = [];
+    lastT = null;
     fill.style.width = "0%";
     status.textContent = `0 / ${TARGET} keystrokes`;
+    transitioning = false;
     ta.focus();
   }
 
   ta.addEventListener("keydown", (e) => {
-    if (finished) return;
+    if (finished || transitioning) return; // hard lock during hand-off
     const k = e.key;
     let count = false, bs = false;
     if (k === "Backspace" || k === "Delete") { count = true; bs = true; }
@@ -49,27 +68,34 @@
     if (!count) return;
 
     const t = performance.now();
-    if (roundStart === null) roundStart = t;
-    allEvents.push({ t, bs });
-    totalKeys++;
-    if (!bs) roundChars++;
+    if (lastT !== null) intervals.push(t - lastT); // only within a round
+    lastT = t;
 
-    const n = Math.min(roundChars, TARGET);
+    if (bs) { totalBs++; }
+    else { charTimes.push(t); totalChars++; }
+
+    const n = Math.min(charTimes.length, TARGET);
     fill.style.width = (n / TARGET) * 100 + "%";
     status.textContent = `${n} / ${TARGET} keystrokes`;
 
-    if (roundChars >= TARGET) finishRound(t);
+    if (charTimes.length >= TARGET) finishRound();
   });
 
-  function finishRound(t) {
-    const mins = (t - roundStart) / 60000;
-    const wpm = mins > 0 ? roundChars / 5 / mins : 0;
+  function finishRound() {
+    transitioning = true; // lock immediately — no more keystrokes counted
+
+    // Exact gross WPM for this round: TARGET chars from first to last char time.
+    const first = charTimes[0];
+    const last = charTimes[TARGET - 1];
+    const minutes = (last - first) / 60000;
+    const wpm = minutes > 0 ? TARGET / 5 / minutes : 0;
     roundWpms.push(wpm);
 
     round++;
     if (round < PASSAGES.length) {
-      status.textContent = "Nice — next round…";
-      setTimeout(loadRound, 650);
+      status.textContent = `Round done — get ready for ${round + 1} / 3…`;
+      ta.value = "";
+      setTimeout(loadRound, 800);
     } else {
       finish();
     }
@@ -77,10 +103,15 @@
 
   function finish() {
     finished = true;
-    const baseline = window.RedlineFeatures.baselineFromEvents(allEvents) || {};
+    const med = median(intervals);
+    const kpm = med > 0 ? 60000 / med : 0; // keystrokes/min, same metric the gauge uses
+    const m = mean(intervals);
+    const cv = m > 0 ? std(intervals, m) / m : 0.5;
+    const totalKeys = totalChars + totalBs;
+    const bsRate = totalKeys > 0 ? totalBs / totalKeys : 0;
     const avgWpm = Math.round(roundWpms.reduce((s, w) => s + w, 0) / roundWpms.length);
-    baseline.wpm = avgWpm; // cleaner per-round average (ignores between-round gaps)
 
+    const baseline = { kpm, cv, bsRate, wpm: avgWpm };
     chrome.storage.local.set({ baseline }, () => {
       document.getElementById("testScreen").style.display = "none";
       document.getElementById("wpm").textContent = avgWpm;
