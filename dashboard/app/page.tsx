@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
 import StatusBlock from "@/components/StatusBlock";
 import HowCalculated from "@/components/HowCalculated";
@@ -75,7 +74,6 @@ export default function Page() {
 
   return (
     <main className="relative">
-      <Nav />
       <Hero value={score} connected={connected} stale={stale} />
 
       <Container>

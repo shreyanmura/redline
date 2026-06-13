@@ -21,7 +21,7 @@ export default function Hero({
     : "Connected to your typing · live";
   const dotColor = live ? "bg-rl-green" : stale ? "bg-rl-yellow" : "bg-white/30";
   return (
-    <section className="relative flex min-h-[92vh] items-center overflow-hidden pt-28">
+    <section className="relative flex min-h-[92vh] items-center overflow-hidden pt-12">
       <div className="pointer-events-none absolute inset-0 bg-grid-fade" />
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 px-6 lg:grid-cols-[1fr_1.05fr]">
         {/* left */}
