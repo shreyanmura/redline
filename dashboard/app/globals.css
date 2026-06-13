@@ -80,6 +80,22 @@ body {
 .bar-fill { height: 100%; border-radius: 999px; }
 .bar-row .v { font-size: 12px; font-family: ui-monospace, Menlo, monospace; text-align: right; color: var(--text); }
 
+/* ---------- how it's calculated ---------- */
+.formula {
+  font-size: 12.5px; font-family: ui-monospace, Menlo, monospace; color: #94a3b8;
+  background: #0b0e14; border: 1px solid var(--line); border-radius: 10px;
+  padding: 11px 13px; margin-bottom: 18px; line-height: 1.7;
+}
+.formula b { color: #e5e7eb; }
+.formula .note { color: #64748b; }
+.factors { display: flex; flex-direction: column; gap: 15px; }
+.factor-top { display: grid; grid-template-columns: 108px 1fr 64px; align-items: center; gap: 10px; }
+.factor-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.factor-track { height: 8px; background: #0b0e14; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.factor-track span { display: block; height: 100%; border-radius: 999px; }
+.factor-pts { font-size: 11px; font-family: ui-monospace, Menlo, monospace; color: var(--muted2); text-align: right; }
+.factor-desc { font-size: 11.5px; color: var(--muted); margin-top: 4px; line-height: 1.45; }
+
 /* ---------- coach ---------- */
 .coach { display: flex; flex-direction: column; height: 100%; }
 .coach-head { display: flex; align-items: center; gap: 11px; margin-bottom: 14px; }

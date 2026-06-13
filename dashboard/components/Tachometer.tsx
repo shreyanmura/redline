@@ -69,6 +69,8 @@ export default function Tachometer({ score, size = 300 }: { score: number; size?
         fontSize={32} fontWeight={800} fill={color}>{Math.round(score)}</text>
       <text x={100} y={168} textAnchor="middle" fontFamily="ui-sans-serif, system-ui, sans-serif"
         fontSize={9} letterSpacing={2} fill="#64748b">ENGINE LOAD</text>
+      <text x={100} y={181} textAnchor="middle" fontFamily="ui-monospace, Menlo, monospace"
+        fontSize={9} letterSpacing={1} fill="#94a3b8">( 0 – 100 )</text>
     </svg>
   );
 }

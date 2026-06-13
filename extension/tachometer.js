@@ -135,6 +135,14 @@
     label.textContent = "ENGINE LOAD";
     svg.appendChild(label);
 
+    const unit = el("text", {
+      x: 100, y: 181, "text-anchor": "middle",
+      "font-family": "ui-monospace,Menlo,monospace", "font-size": 9,
+      "letter-spacing": 1, fill: "#94a3b8",
+    });
+    unit.textContent = "( 0 – 100 )";
+    svg.appendChild(unit);
+
     // Check-engine warning icon (hidden until redline).
     const warn = el("g", { opacity: 0 });
     warn.innerHTML = `

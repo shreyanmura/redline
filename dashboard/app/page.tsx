@@ -13,6 +13,13 @@ function statusText(s: number) {
   return ["Idle", "running cool — nice and steady"];
 }
 
+const FACTORS = [
+  { key: "Pace", max: 62, color: "#f87171", desc: "How far your typing speed sits above your own calm baseline — racing on adrenaline, or stalling under mental overload." },
+  { key: "Corrections", max: 24, color: "#fbbf24", desc: "Backspaces ÷ keystrokes. Error rates climb when you're under pressure." },
+  { key: "Rhythm", max: 18, color: "#a78bfa", desc: "How erratic your timing is — bursts of speed broken by abrupt stops." },
+  { key: "Hesitation", max: 14, color: "#60a5fa", desc: "Share of short, hesitant pauses (0.35–1.5s) — many brief stalls signal strain." },
+];
+
 export default function Page() {
   const [view, setView] = useState<View>(DEMO_VIEW);
   const [connected, setConnected] = useState(false);
@@ -145,6 +152,39 @@ export default function Page() {
             with many short, hesitant pauses. In studies this predicts strain better than heart rate, and
             it's <b>passive</b>: no survey to fill out when you're already spiraling.
           </div>
+        </div>
+      </div>
+
+      {/* how it's calculated */}
+      <div className="card section-gap">
+        <h2>How "engine load" is calculated</h2>
+        <div className="hint">
+          A 0–100 index — like an air-quality or credit score — that blends four research-backed typing
+          signals, measured against your own calm baseline. Higher means more strain. It's an early
+          signal, not a diagnosis.
+        </div>
+        <div className="formula">
+          load = <b>Pace</b>×62 + <b>Corrections</b>×24 + <b>Rhythm</b>×18 + <b>Hesitation</b>×14
+          <span className="note"> → summed, capped at 100, then smoothed</span>
+        </div>
+        <div className="factors">
+          {FACTORS.map((f) => (
+            <div key={f.key}>
+              <div className="factor-top">
+                <span className="factor-name">{f.key}</span>
+                <span className="factor-track">
+                  <span style={{ width: `${(f.max / 62) * 100}%`, background: f.color }} />
+                </span>
+                <span className="factor-pts">up to {f.max}</span>
+              </div>
+              <div className="factor-desc">{f.desc}</div>
+            </div>
+          ))}
+        </div>
+        <div className="callout" style={{ marginTop: 16 }}>
+          Each signal is scaled 0→1 between a calm floor and a maxed-out ceiling, multiplied by its
+          weight, and added up. Because <b>pace</b> is measured against <b>your own</b> calm baseline,
+          typing at your normal speed scores near zero — which is why a relaxed session sits low and green.
         </div>
       </div>
 
