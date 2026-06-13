@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="popup.css" />
+    <title>Redline</title>
+  </head>
+  <body>
+    <div class="brand">
+      <div class="logo" id="logo"></div>
+      <div class="brand-text">
+        <div class="name">REDLINE</div>
+        <div class="tag">a tachometer for your mental load</div>
+      </div>
+    </div>
+
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">Monitoring</div>
+        <div class="toggle-state" id="state">Off</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="toggle" />
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num" id="peak">0</div>
+        <div class="stat-lbl">PEAK TODAY</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="sessions">0</div>
+        <div class="stat-lbl">SESSIONS</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="cal">—</div>
+        <div class="stat-lbl">BASELINE</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" id="dash">Open dashboard</button>
+      <button class="btn" id="calibrate">Calibrate baseline</button>
+    </div>
+
+    <div class="footer">
+      <span class="lock">&#128274;</span> Timing only — we never see the words you type.
+      All scoring runs on your device.
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
