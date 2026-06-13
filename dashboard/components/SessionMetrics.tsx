@@ -31,12 +31,18 @@ export default function SessionMetrics({ summary }: { summary: SessionSummary })
     },
     {
       label: "Session length",
-      node: (
-        <>
-          <CountUp value={Math.round(summary.durationSec / 60)} />
-          <span className="ml-1 text-2xl text-white/40">min</span>
-        </>
-      ),
+      node:
+        summary.durationSec >= 60 ? (
+          <>
+            <CountUp value={Math.round(summary.durationSec / 60)} />
+            <span className="ml-1 text-2xl text-white/40">min</span>
+          </>
+        ) : (
+          <>
+            <CountUp value={summary.durationSec} />
+            <span className="ml-1 text-2xl text-white/40">s</span>
+          </>
+        ),
       color: "#fff",
       sub: `${summary.avgWpm ?? "—"} wpm avg`,
     },
