@@ -10,9 +10,6 @@
  * a session summary + asks the background worker for an AI debrief.
  */
 (function () {
-  // Guard against double-injection (manifest content_script + programmatic inject).
-  if (window.__redlineContent) return;
-  window.__redlineContent = true;
   const { createTracker, ZONES } = window.RedlineFeatures;
 
   // ----- Dashboard bridge -------------------------------------------------
@@ -170,11 +167,10 @@
     if (enabled && !wasEnabled) startSession();
     else if (!enabled && wasEnabled) endSession();
     else if (enabled) {
-      // already running (e.g. user just toggled gauge visibility): make sure the
-      // widget exists so showing it actually pops it up.
+      // already enabled on this tab (e.g. just toggled gauge visibility): make
+      // sure the widget is mounted so showing it actually pops it up.
       window.RedlineWidget.mount();
       window.RedlineWidget.setActive(true);
-      if (!intervalId) intervalId = setInterval(tickLoop, 150);
     }
     window.RedlineWidget.setHidden(gaugeHidden); // applies live; harmless if unmounted
   }

@@ -49,27 +49,6 @@ async function fetchDebrief(summary) {
   }
 }
 
-// Inject Redline into already-open tabs so the gauge works without a manual
-// refresh after the extension is (re)loaded. Newly opened tabs get the gauge via
-// the manifest content_scripts entry. Restricted pages (chrome://, the Web Store,
-// the PDF viewer, etc.) can't be injected — those need a normal page.
-function injectOpenTabs() {
-  chrome.tabs.query({}, (tabs) => {
-    for (const tab of tabs) {
-      const url = tab.url || "";
-      if (!/^https?:\/\//.test(url)) continue;
-      chrome.scripting
-        .executeScript({
-          target: { tabId: tab.id },
-          files: ["features.js", "tachometer.js", "widget.js", "content.js"],
-        })
-        .catch(() => {});
-    }
-  });
-}
-chrome.runtime.onInstalled.addListener(injectOpenTabs);
-chrome.runtime.onStartup.addListener(injectOpenTabs);
-
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === "saveSession") {
     saveSession(msg.summary);
