@@ -61,7 +61,7 @@ export default function SessionMetrics({ summary }: { summary: SessionSummary })
             >
               {it.node}
             </div>
-            <div className="mt-3 text-[12px] text-white/35">{it.sub}</div>
+            <div className="mt-3 text-[15px] text-white/35">{it.sub}</div>
           </div>
         </Reveal>
       ))}

@@ -90,7 +90,7 @@ export default function TonightReplay({ data }: { data: TimePoint[] }) {
           </svg>
 
           {hp && (
-            <div className="pointer-events-none absolute left-6 top-6 rounded-lg border border-line bg-ink2/90 px-3 py-1.5 text-[12px] backdrop-blur">
+            <div className="pointer-events-none absolute left-6 top-6 rounded-lg border border-line bg-ink2/90 px-3 py-1.5 text-[15px] backdrop-blur">
               <span className="text-white/50">{fmt(hp.sec)}</span> · <span style={{ color: loadColor(hp.load) }}>{Math.round(hp.load)} load</span>
             </div>
           )}

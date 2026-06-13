@@ -96,10 +96,10 @@ export default function Tachometer({ value }: { value: number }) {
         <text x={CX} y={CY - 6} textAnchor="middle" fontSize={84} fontWeight={700} fill="#fff" className="num" style={{ letterSpacing: "-0.04em" }}>
           {shown}
         </text>
-        <text x={CX} y={CY + 26} textAnchor="middle" fontSize={11} fill="rgba(255,255,255,0.4)" letterSpacing="3" fontWeight={600}>
+        <text x={CX} y={CY + 28} textAnchor="middle" fontSize={14} fill="rgba(255,255,255,0.4)" letterSpacing="3" fontWeight={600}>
           ENGINE LOAD
         </text>
-        <text x={CX} y={CY + 44} textAnchor="middle" fontSize={11} fill="rgba(255,255,255,0.28)" letterSpacing="1" fontFamily="ui-monospace, monospace">
+        <text x={CX} y={CY + 48} textAnchor="middle" fontSize={14} fill="rgba(255,255,255,0.28)" letterSpacing="1" fontFamily="ui-monospace, monospace">
           ( 0 – 100 )
         </text>
       </svg>

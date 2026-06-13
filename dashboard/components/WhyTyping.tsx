@@ -46,7 +46,7 @@ function TypingViz() {
         ))}
       </div>
 
-      <div className="relative flex items-center gap-3 text-[11px] text-white/35">
+      <div className="relative flex items-center gap-3 text-[14px] text-white/35">
         <span className="flex items-center gap-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-rl-red" /> correction
         </span>
@@ -80,7 +80,7 @@ export default function WhyTyping() {
             </p>
             <div className="mt-8 flex flex-wrap gap-2.5">
               {["Passive", "No surveys", "No wearables", "On-device"].map((t) => (
-                <span key={t} className="rounded-full border border-line px-3.5 py-1.5 text-[12px] text-white/55">
+                <span key={t} className="rounded-full border border-line px-3.5 py-1.5 text-[15px] text-white/55">
                   {t}
                 </span>
               ))}

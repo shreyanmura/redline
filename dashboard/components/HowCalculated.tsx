@@ -78,7 +78,7 @@ export default function HowCalculated() {
               </motion.span>
             ))}
           </div>
-          <div className="mt-5 flex flex-wrap gap-x-6 gap-y-1 font-mono text-[13px] text-white/35">
+          <div className="mt-5 flex flex-wrap gap-x-6 gap-y-1 font-mono text-[16px] text-white/35">
             <span>→ summed</span>
             <span>→ capped at 100</span>
             <span>→ smoothed over time</span>
@@ -107,7 +107,7 @@ export default function HowCalculated() {
                   transition={{ duration: 1.1, delay: 0.15 + i * 0.08, ease: EASE }}
                 />
               </div>
-              <p className="mt-4 max-w-2xl text-[13.5px] leading-relaxed text-white/45">{f.desc}</p>
+              <p className="mt-4 max-w-2xl text-[16.5px] leading-relaxed text-white/45">{f.desc}</p>
             </div>
           </Reveal>
         ))}
@@ -123,7 +123,7 @@ export default function HowCalculated() {
           </div>
           <div>
             <div className="text-[15px] font-medium text-white">Why is my score low when I&apos;m calm?</div>
-            <p className="mt-2 max-w-2xl text-[13.5px] leading-relaxed text-white/50">
+            <p className="mt-2 max-w-2xl text-[16.5px] leading-relaxed text-white/50">
               Because every metric is compared against <span className="text-white/80">your personal baseline</span>,
               relaxed typing naturally stays near zero and sits in the green zone. The score reflects{" "}
               <span className="text-white/80">change from your normal</span> — not absolute typing speed.

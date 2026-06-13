@@ -89,7 +89,7 @@ export default function Replay({ data }: { data: TimePoint[] }) {
               <span className="num text-5xl leading-none" style={{ color: loadColor(cur.load) }}>{Math.round(cur.load)}</span>
               <div className="leading-tight">
                 <div className="label">load at {fmt(cur.sec)}</div>
-                <div className="mt-1 text-[12px] text-white/40">{hover != null ? "hovering" : playing ? "playing" : "paused"}</div>
+                <div className="mt-1 text-[15px] text-white/40">{hover != null ? "hovering" : playing ? "playing" : "paused"}</div>
               </div>
             </div>
           </div>
@@ -99,7 +99,7 @@ export default function Replay({ data }: { data: TimePoint[] }) {
             {/* markers */}
             {markers.map((m) => (
               <div key={m.label} className="absolute top-0 z-10 -translate-x-1/2" style={{ left: `${xpct(m.i)}%` }}>
-                <div className="whitespace-nowrap text-[10px] font-medium" style={{ color: m.color }}>{m.label}</div>
+                <div className="whitespace-nowrap text-[13px] font-medium" style={{ color: m.color }}>{m.label}</div>
                 <div className="mx-auto mt-0.5 h-1.5 w-1.5 rounded-full" style={{ background: m.color, boxShadow: `0 0 8px ${m.color}` }} />
               </div>
             ))}
@@ -126,7 +126,7 @@ export default function Replay({ data }: { data: TimePoint[] }) {
               {/* hover tooltip */}
               {hover != null && (
                 <div
-                  className="pointer-events-none absolute -top-9 -translate-x-1/2 rounded-lg border border-line bg-ink2/90 px-2.5 py-1 text-[11px] backdrop-blur"
+                  className="pointer-events-none absolute -top-9 -translate-x-1/2 rounded-lg border border-line bg-ink2/90 px-2.5 py-1 text-[14px] backdrop-blur"
                   style={{ left: `${xpct(hover)}%` }}
                 >
                   <span className="text-white/50">{fmt(pts[hover].sec)}</span>{" "}
@@ -134,7 +134,7 @@ export default function Replay({ data }: { data: TimePoint[] }) {
                 </div>
               )}
             </div>
-            <div className="mt-3 flex justify-between text-[11px] text-white/30">
+            <div className="mt-3 flex justify-between text-[14px] text-white/30">
               <span>{fmt(0)}</span>
               <span>{fmt(maxSec)}</span>
             </div>

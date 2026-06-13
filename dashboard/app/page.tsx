@@ -48,17 +48,19 @@ export default function Page() {
       <Container>
         <StatusBlock value={score} />
         <div className="hairline" />
+        {/* first graphic after the hero */}
+        <WhyTyping />
+        <div className="hairline" />
+        {/* the index, immediately followed by its breakdown */}
         <HowCalculated />
+        <WhatDroveLoad signals={view.signals} />
+        <div className="hairline" />
         <SessionMetrics summary={view.summary} />
         <Replay data={view.tonight} />
         <div className="hairline" />
         <PredictiveChart data={view.week} />
         <div className="hairline" />
         <TonightReplay data={view.tonight} />
-        <div className="hairline" />
-        <WhatDroveLoad signals={view.signals} />
-        <div className="hairline" />
-        <WhyTyping />
         <div className="hairline" />
         <Coach summary={view.summary} />
         <PrivacySection />

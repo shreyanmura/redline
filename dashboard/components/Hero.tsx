@@ -15,7 +15,7 @@ export default function Hero({ value, connected }: { value: number; connected: b
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: EASE }}
-            className="flex items-center gap-2 text-[12px] text-white/45"
+            className="flex items-center gap-2 text-[15px] text-white/45"
           >
             <span className="relative flex h-2 w-2">
               <span

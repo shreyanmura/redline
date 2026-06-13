@@ -73,9 +73,9 @@ export default function Coach({ summary }: { summary: SessionSummary }) {
             </div>
             <div className="flex-1">
               <div className="text-sm font-medium">Redline Coach</div>
-              <div className="text-[11px] text-white/40">end-of-session debrief · powered by Backboard</div>
+              <div className="text-[14px] text-white/40">end-of-session debrief · powered by Backboard</div>
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] text-white/50">
+            <div className="flex items-center gap-1.5 text-[14px] text-white/50">
               <motion.span
                 className="h-1.5 w-1.5 rounded-full bg-rl-green"
                 animate={{ opacity: [1, 0.25, 1] }}
@@ -107,13 +107,13 @@ export default function Coach({ summary }: { summary: SessionSummary }) {
 
           {/* footer / regenerate */}
           <div className="flex items-center justify-between border-t border-line px-6 py-4 sm:px-8">
-            <div className="text-[11px] text-white/35">
+            <div className="text-[14px] text-white/35">
               {source === "backboard" ? "generated live · remembers your history" : source === "local" ? "offline fallback" : ""}
             </div>
             <button
               onClick={fetchDebrief}
               disabled={loading}
-              className="flex items-center gap-2 rounded-full border border-line px-4 py-2 text-[13px] text-white/70 transition-colors hover:border-white/20 hover:text-white disabled:opacity-50"
+              className="flex items-center gap-2 rounded-full border border-line px-4 py-2 text-[16px] text-white/70 transition-colors hover:border-white/20 hover:text-white disabled:opacity-50"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 4v5h-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
               Regenerate

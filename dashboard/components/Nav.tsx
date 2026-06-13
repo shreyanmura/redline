@@ -25,9 +25,9 @@ export default function Nav() {
       <div className="mx-auto flex max-w-6xl items-center justify-between rounded-full border border-line bg-ink2/60 px-4 py-2.5 backdrop-blur-2xl sm:px-5">
         <div className="flex items-center gap-2.5">
           <Logo />
-          <span className="text-[13px] font-semibold tracking-[0.22em]">REDLINE</span>
+          <span className="text-[16px] font-semibold tracking-[0.22em]">REDLINE</span>
         </div>
-        <nav className="flex items-center gap-5 text-[13px] sm:gap-7">
+        <nav className="flex items-center gap-5 text-[16px] sm:gap-7">
           {links.map((l) => (
             <a key={l} href="#" className="hidden text-white/55 transition-colors hover:text-white sm:inline">
               {l}

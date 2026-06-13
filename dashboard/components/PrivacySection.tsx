@@ -21,7 +21,7 @@ export default function PrivacySection() {
             metadata is used to estimate engine load.
           </p>
           <div className="mt-10 h-px w-24 bg-line" />
-          <div className="mt-8 text-[12px] text-white/30">Redline · Milpitas Hacks · The Pressure Valve</div>
+          <div className="mt-8 text-[15px] text-white/30">Redline · Milpitas Hacks · The Pressure Valve</div>
         </div>
       </Reveal>
     </div>
