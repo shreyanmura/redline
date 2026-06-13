@@ -37,7 +37,7 @@
     .dot.off { background:#475569; box-shadow:none; }
     .status { font-size: 9px; color:#64748b; letter-spacing: .5px; }
     .gauge { display:flex; justify-content:center; }
-    .cap { text-align:center; font-size:9px; color:#64748b; margin-top:-4px; letter-spacing:.3px; }
+    .cap { text-align:center; font-size:12px; color:#64748b; margin-top:-2px; letter-spacing:.3px; }
     .nudge {
       margin-top: 8px; font-size: 11.5px; line-height: 1.35; color: #fde68a;
       background: rgba(245,158,11,.10); border: 1px solid rgba(245,158,11,.25);
