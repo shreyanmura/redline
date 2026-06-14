@@ -45,12 +45,12 @@ $("calibrate").addEventListener("click", () => {
 
 $("reset").addEventListener("click", async () => {
   const ok = confirm(
-    "Reset all recorded activity?\n\nThis clears your session history and stats on the extension AND the dashboard. Your calm baseline is kept."
+    "Reset all recorded activity?\n\nThis clears your session history, stats, and calm-WPM baseline on the extension AND the dashboard. You'll need to recalibrate."
   );
   if (!ok) return;
   // Clearing these makes the bridge push an empty state to the dashboard, so the
   // website reverts to match the extension automatically.
-  await chrome.storage.local.remove(["sessions", "peakToday", "coachThreadId"]);
+  await chrome.storage.local.remove(["sessions", "peakToday", "coachThreadId", "baseline"]);
   render();
 });
 
