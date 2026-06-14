@@ -87,3 +87,34 @@ export function buildView(sessions: SessionSummary[] | null, baseline: Baseline 
 }
 
 export const DEMO_VIEW: View = buildView(null, null);
+
+// Shown when the extension is connected but has no recorded sessions (fresh, or
+// after a "Reset all activity"). Everything reads zero so the site matches the
+// extension instead of silently falling back to the sample data.
+export function emptyView(baseline: Baseline | null): View {
+  return {
+    isLive: true,
+    baseline,
+    summary: {
+      peakLoad: 0,
+      currentLoad: 0,
+      avgLoad: 0,
+      durationSec: 0,
+      keystrokes: 0,
+      avgWpm: 0,
+      redlineSeconds: 0,
+      dominantSignal: "No sessions yet",
+      contributions: { speed: 0, errors: 0, rhythm: 0, hesitation: 0 },
+      series: [],
+      hadBaseline: !!baseline,
+    },
+    week: buildWeek([]),
+    tonight: [],
+    signals: [
+      { key: "Pace", value: 0 },
+      { key: "Corrections", value: 0 },
+      { key: "Rhythm", value: 0 },
+      { key: "Hesitation", value: 0 },
+    ],
+  };
+}

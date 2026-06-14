@@ -71,6 +71,8 @@ input:checked + .slider::before { transform: translateX(22px); background: #fff;
   background: linear-gradient(90deg, #1d4ed8, #3b82f6); border: none; color: #fff;
 }
 .btn.primary:hover { filter: brightness(1.08); }
+.btn.danger { color: #fca5a5; border-color: rgba(239, 68, 68, 0.28); }
+.btn.danger:hover { background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.45); }
 
 .footer {
   font-size: 10px; color: var(--muted); line-height: 1.5;

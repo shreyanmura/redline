@@ -43,4 +43,15 @@ $("calibrate").addEventListener("click", () => {
   chrome.tabs.create({ url: chrome.runtime.getURL("calibrate.html") });
 });
 
+$("reset").addEventListener("click", async () => {
+  const ok = confirm(
+    "Reset all recorded activity?\n\nThis clears your session history and stats on the extension AND the dashboard. Your calm baseline is kept."
+  );
+  if (!ok) return;
+  // Clearing these makes the bridge push an empty state to the dashboard, so the
+  // website reverts to match the extension automatically.
+  await chrome.storage.local.remove(["sessions", "peakToday", "coachThreadId"]);
+  render();
+});
+
 render();

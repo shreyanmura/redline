@@ -13,7 +13,7 @@ import WhyTyping from "@/components/WhyTyping";
 import Coach from "@/components/Coach";
 import PrivacySection from "@/components/PrivacySection";
 import { Container } from "@/components/ui/Container";
-import { buildView, DEMO_VIEW, View } from "@/lib/view";
+import { buildView, emptyView, DEMO_VIEW, View } from "@/lib/view";
 import { SessionSummary, Baseline } from "@/lib/types";
 
 export default function Page() {
@@ -39,7 +39,10 @@ export default function Page() {
         // only re-render when the data actually changed (heartbeats are frequent)
         if (sig !== sigRef.current) {
           sigRef.current = sig;
-          setView(buildView(sessions, d.baseline as Baseline));
+          const baseline = d.baseline as Baseline;
+          // connected but empty (fresh / after reset) → explicit zeroed state,
+          // not the sample data, so the site matches the extension
+          setView(sessions.length ? buildView(sessions, baseline) : emptyView(baseline));
         }
       }
     }
