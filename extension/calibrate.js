@@ -14,7 +14,6 @@
   const PASSAGES = [
     "The quietest mornings make the clearest afternoons, and there is enough time for the things that matter most.",
     "Slow water still gets there. One steady line at a time, the page fills and the day takes care of itself.",
-    "I can do hard things without rushing. A calm mind keeps its own rhythm, unhurried, patient, and sure of the way.",
   ];
 
   const ta = document.getElementById("ta");
@@ -45,10 +44,10 @@
 
   function loadRound() {
     sampleEl.textContent = PASSAGES[round];
-    stepEl.textContent = `TEST ${round + 1} / 3`;
-    for (let i = 0; i < 3; i++) {
+    stepEl.textContent = `TEST ${round + 1} / ${PASSAGES.length}`;
+    for (let i = 0; i < PASSAGES.length; i++) {
       const d = document.getElementById("d" + i);
-      d.className = "dot" + (i < round ? " done" : i === round ? " active" : "");
+      if (d) d.className = "dot" + (i < round ? " done" : i === round ? " active" : "");
     }
     ta.value = "";
     charTimes = [];
@@ -93,7 +92,7 @@
 
     round++;
     if (round < PASSAGES.length) {
-      status.textContent = `Round done — get ready for ${round + 1} / 3…`;
+      status.textContent = `Round done — get ready for ${round + 1} / ${PASSAGES.length}…`;
       ta.value = "";
       setTimeout(loadRound, 800);
     } else {
