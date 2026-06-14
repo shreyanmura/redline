@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import PoweredBy from "@/components/PoweredBy";
 import Hero from "@/components/Hero";
 import StatusBlock from "@/components/StatusBlock";
 import HowCalculated from "@/components/HowCalculated";
@@ -74,6 +75,7 @@ export default function Page() {
 
   return (
     <main className="relative">
+      <PoweredBy />
       <Hero value={score} connected={connected} stale={stale} />
 
       <Container>
